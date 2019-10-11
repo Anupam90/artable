@@ -30,13 +30,21 @@ class RegisterVC: UIViewController {
     }
     
     @objc func textFieldDidChange(_ textField : UITextField) {
+        
         guard let passTxt = passwordTxt.text else {return}
+        guard let conPassTxt = confirmPassTxt.text else {return}
         
         // If we have started typing in the confirm pass text field
-        if textField == confirmPassTxt {
-            passCheckImg.isHidden = false
-            confirmPassCheckImg.isHidden = false
-        } else {
+        if textField == confirmPassTxt{
+            if(passTxt.isEmpty && conPassTxt.isEmpty) {
+                passCheckImg.isHidden = true
+                confirmPassCheckImg.isHidden = true
+            } else {
+                passCheckImg.isHidden = false
+                confirmPassCheckImg.isHidden = false
+            }
+        }
+        else {
             if passTxt.isEmpty {
                 passCheckImg.isHidden = true
                 confirmPassCheckImg.isHidden = true
@@ -57,13 +65,17 @@ class RegisterVC: UIViewController {
     @IBAction func registerClicked(_ sender: Any) {
         guard let email = emailTxt.text , email.isNotEmpty,
             let username = usernameTxt.text , username.isNotEmpty,
+            let confirmPass = confirmPassTxt.text , confirmPass.isNotEmpty,
             let password = passwordTxt.text , password.isNotEmpty else {return}
         activityIndicator.startAnimating()
         
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             if let error = error {
                 debugPrint(error)
+                print(error)
+                self.activityIndicator.stopAnimating()
                 return
+                
             }
             
             self.activityIndicator.stopAnimating()
